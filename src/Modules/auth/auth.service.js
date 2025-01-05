@@ -1,6 +1,7 @@
 import { userModel } from "../../DB/Models/user.model.js";
 import bcrypt from "bcrypt";
 import CryptoJS from "crypto-js";
+import jwt from "jsonwebtoken";
 
 export const register = async (req, res) => {
   try {
@@ -37,8 +38,14 @@ export const login = async (req, res) => {
       return res
         .status(400)
         .json({ sucess: false, message: "Password is wrong" });
-
-    return res.status(200).json({ sucess: true, message: "Login Success" });
+    const token = jwt.sign(
+      { id: user._id, email: user.email },
+      process.env.JWT_SECRET,
+      { expiresIn: "10s" }
+    );
+    return res
+      .status(200)
+      .json({ sucess: true, message: "Login Success", token });
   } catch (error) {
     return res.status(500).json({ sucess: false, message: error.message });
   }
