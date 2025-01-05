@@ -9,7 +9,7 @@ export const register = async (req, res) => {
     if (password !== confirmPassword)
       return res
         .status(400)
-        .json({ sucess: false, message: "Passwords must match!" });
+        .json({ success: false, message: "Passwords must match!" });
     // encrypt phone and hash Email
     const user = await userModel.create({
       email,
@@ -17,9 +17,9 @@ export const register = async (req, res) => {
       userName,
       phone: CryptoJS.AES.encrypt(phone, process.env.SECRET_KEY),
     });
-    return res.status(201).json({ sucess: true, user });
+    return res.status(201).json({ success: true, user });
   } catch (error) {
-    return res.status(500).json({ sucess: false, message: error.message });
+    return res.status(500).json({ success: false, message: error.message });
   }
 };
 
@@ -30,23 +30,23 @@ export const login = async (req, res) => {
     if (!user)
       return res
         .status(400)
-        .json({ sucess: false, message: "Email not valid" });
+        .json({ success: false, message: "Email not valid" });
 
     const match = bcrypt.compareSync(password, user.password);
 
     if (!match)
       return res
         .status(400)
-        .json({ sucess: false, message: "Password is wrong" });
+        .json({ success: false, message: "Password is wrong" });
     const token = jwt.sign(
       { id: user._id, email: user.email },
-      process.env.JWT_SECRET,
-      { expiresIn: "10s" }
+      process.env.JWT_SECRET
+      // { expiresIn: "40s" }
     );
     return res
       .status(200)
-      .json({ sucess: true, message: "Login Success", token });
+      .json({ success: true, message: "Login Success", token });
   } catch (error) {
-    return res.status(500).json({ sucess: false, message: error.message });
+    return res.status(500).json({ success: false, message: error?.message });
   }
 };
