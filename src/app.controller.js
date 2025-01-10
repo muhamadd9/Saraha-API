@@ -7,8 +7,16 @@ const bootstrap = (app, express) => {
   connectDB();
   app.use("/auth", authController);
   app.use("/user", userController);
+
   app.all("*", (req, res) => {
     return res.status(404).json({ message: "Page Not Found" });
+  });
+
+  app.use((err, req, res, next) => {
+    const status = err.status || 500;
+    return res
+      .status(status)
+      .json({ success: false, message: err.message, stack: err.stack });
   });
 };
 
