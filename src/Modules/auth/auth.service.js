@@ -5,6 +5,7 @@ import jwt from "jsonwebtoken";
 import sendEmails, { subjects } from "../../utils/sendEmails.js";
 import { signUp } from "../../utils/generateHTML.js";
 import CustomError from "../../utils/customError.js";
+import { emailEmmiter } from "../../utils/email.event.js";
 
 export const register = async (req, res, next) => {
   const { email, password, userName, phone, confirmPassword } = req.body;
@@ -20,13 +21,7 @@ export const register = async (req, res, next) => {
   });
 
   // email
-  const token = jwt.sign({ email }, process.env.JWT_SECRET);
-  const link = `http://localhost:3000/auth/acctivate_account/${token}`;
-  const emailIsSent = await sendEmails({
-    to: email,
-    subject: subjects.register,
-    html: signUp(link),
-  });
+  emailEmmiter.emit("sendEmail", email);
   return res.status(201).json({ success: true, user });
 };
 
