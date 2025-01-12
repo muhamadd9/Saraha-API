@@ -1,4 +1,4 @@
-import { userModel } from "../../DB/Models/user.model.js";
+import { genders, userModel } from "../../DB/Models/user.model.js";
 import bcrypt from "bcrypt";
 import CryptoJS from "crypto-js";
 import jwt from "jsonwebtoken";
@@ -6,11 +6,10 @@ import sendEmails, { subjects } from "../../utils/sendEmails.js";
 import { signUp } from "../../utils/generateHTML.js";
 import CustomError from "../../utils/customError.js";
 import { emailEmmiter } from "../../utils/email.event.js";
+import Joi from "joi";
 
 export const register = async (req, res, next) => {
   const { email, password, userName, phone, confirmPassword } = req.body;
-  if (password !== confirmPassword)
-    return next(new CustomError("Passwords must match!", 400));
 
   // encrypt phone and hash Email
   const user = await userModel.create({
