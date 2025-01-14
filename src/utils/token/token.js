@@ -4,16 +4,15 @@ import jwt from "jsonwebtoken";
 export const generateToken = ({
   payload,
   signiture = process.env.JWT_SECRET,
-  options: {},
+  options = {},
 }) => {
-  jwt.sign(payload, signiture, options);
-  return bcrypt.hashSync(plainText, rounds);
+  return jwt.sign(payload, signiture, options);
 };
 
 export const verifyToken = ({
   token,
   signiture = process.env.JWT_SECRET,
-  options: {},
+  options = {},
 }) => {
   return jwt.verify(token, signiture, options);
 };
