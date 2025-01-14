@@ -4,6 +4,10 @@ export const genders = {
   male: "male",
   female: "female",
 };
+export const roles = {
+  user: "user",
+  admin: "admin",
+};
 const userSchema = new Schema(
   {
     email: {
@@ -35,6 +39,7 @@ const userSchema = new Schema(
       type: String,
       enum: Object.values(genders),
     },
+    role: { type: String, enum: Object.values(roles), default: roles.user },
   },
   { timestamps: true }
 );

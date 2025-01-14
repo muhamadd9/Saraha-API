@@ -45,7 +45,7 @@ export const login = async (req, res, next) => {
   // generate token
   const token = generateToken({
     payload: { id: user._id, email: user.email },
-    options: { expiresIn: "40s" },
+    options: { expiresIn: "2h" },
   });
 
   return res
