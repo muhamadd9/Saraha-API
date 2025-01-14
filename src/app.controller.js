@@ -1,6 +1,8 @@
 import connectDB from "./DB/connection.js";
 import authController from "./Modules/auth/auth.controller.js";
 import userController from "./Modules/user/user.controller.js";
+import { globalErrorHandler } from "./utils/errorHandling/globalErrorHandlng.js";
+import { notFoundHandler } from "./utils/errorHandling/notFoundHandler.js";
 
 const bootstrap = (app, express) => {
   app.use(express.json());
@@ -8,16 +10,9 @@ const bootstrap = (app, express) => {
   app.use("/auth", authController);
   app.use("/user", userController);
 
-  app.all("*", (req, res) => {
-    return res.status(404).json({ message: "Page Not Found" });
-  });
+  app.all("*", notFoundHandler);
 
-  app.use((err, req, res, next) => {
-    const status = err.status || 500;
-    return res
-      .status(status)
-      .json({ success: false, message: err.message, stack: err.stack });
-  });
+  app.use(globalErrorHandler);
 };
 
 export default bootstrap;

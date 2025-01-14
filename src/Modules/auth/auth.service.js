@@ -1,12 +1,12 @@
-import { genders, userModel } from "../../DB/Models/user.model.js";
+import { userModel } from "../../DB/Models/user.model.js";
 import bcrypt from "bcrypt";
 import CryptoJS from "crypto-js";
 import jwt from "jsonwebtoken";
-import sendEmails, { subjects } from "../../utils/sendEmails.js";
-import { signUp } from "../../utils/generateHTML.js";
-import CustomError from "../../utils/customError.js";
-import { emailEmmiter } from "../../utils/email.event.js";
-import Joi from "joi";
+import CustomError from "../../utils/errorHandling/customError.js";
+import { emailEmmiter } from "../../utils/emails/email.event.js";
+import { compareHash, generateHash } from "../../utils/hashing/hash.js";
+import { generateToken } from "../../utils/token/token.js";
+import { encrypt } from "../../utils/encryption/encryption.js";
 
 export const register = async (req, res, next) => {
   const { email, password, userName, phone, confirmPassword } = req.body;
@@ -14,9 +14,12 @@ export const register = async (req, res, next) => {
   // encrypt phone and hash Email
   const user = await userModel.create({
     email,
-    password: bcrypt.hashSync(password, Number(process.env.ROUND)),
+    password: generateHash({
+      plainText: password,
+      rounds: Number(process.env.ROUNDS),
+    }),
     userName,
-    phone: CryptoJS.AES.encrypt(phone, process.env.SECRET_KEY),
+    phone: encrypt({ plainText: phone }),
   });
 
   // email
@@ -32,11 +35,11 @@ export const login = async (req, res, next) => {
   if (!user.isActivated)
     return next(new CustomError("Acctivate your account first", 400));
 
-  const match = bcrypt.compareSync(password, user.password);
+  if (!compareHash({ plainText: password, hash: user.password }))
+    return next(new CustomError("Password is wrong", 400));
 
-  if (!match) return next(new CustomError("Password is wrong", 400));
-
-  const token = jwt.sign(
+  const token = generateToken({ payload: { id: user._id, email: user.email } });
+  jwt.sign(
     { id: user._id, email: user.email },
     process.env.JWT_SECRET
     // { expiresIn: "40s" }

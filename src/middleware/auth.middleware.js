@@ -1,5 +1,6 @@
 import jwt from "jsonwebtoken";
 import { userModel } from "../DB/Models/user.model.js";
+import { verifyToken } from "../utils/token/token.js";
 const isAuthenticaded = async (req, res, next) => {
   const { authorization } = req.headers;
   // check if it is bearer
@@ -8,7 +9,7 @@ const isAuthenticaded = async (req, res, next) => {
 
   const token = authorization.split(" ")[1];
 
-  const { id } = jwt.verify(token, process.env.JWT_SECRET);
+  const { id } = verifyToken({ token }); 
   const user = await userModel.findById(id).select("-password").lean();
 
   if (!user) return next(new Error("User not found", { cause: 404 }));
