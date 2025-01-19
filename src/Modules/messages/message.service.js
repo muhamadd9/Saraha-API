@@ -30,10 +30,12 @@ export const getSignleMessage = async (req, res, next) => {
 // get all messages
 export const getAllMessages = async (req, res, next) => {
   const flag = req.query;
+  let results;
   if (flag == flags.inbox) {
-    const results = await messageModel.find({ reciver: req.user._id });
+    results = await messageModel.find({ reciver: req.user._id });
+  } else {
+    results = await messageModel.find({ sender: req.user._id });
   }
-  const results = await messageModel.find({ sender: req.user._id });
 
   return res.status(200).json({ success: true, results });
 };
