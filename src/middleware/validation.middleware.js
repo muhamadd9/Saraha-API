@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import CustomError from "../utils/errorHandling/customError.js";
 
 export const validation = (schema) => {
@@ -12,4 +13,10 @@ export const validation = (schema) => {
     }
     return next();
   };
+};
+
+export const isObjectId = (val, helper) => {
+  return mongoose.Types.ObjectId.isValid(val)
+    ? true
+    : helper.message("Invalid ObjectId!");
 };
