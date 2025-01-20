@@ -33,4 +33,12 @@ router.patch(
   asyncHandler(userService.changePassword)
 );
 
+// deactivate account 
+router.delete(
+  "/deactivateAccount",
+  isAuthenticaded,
+  isAuthorized(roles.user, roles.admin),
+  asyncHandler(userService.deactivateAcccount)
+);
+
 export default router;

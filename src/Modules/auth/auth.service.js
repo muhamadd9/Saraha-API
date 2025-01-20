@@ -48,6 +48,12 @@ export const login = async (req, res, next) => {
     options: { expiresIn: "2h" },
   });
 
+  // reactivate account when user is deleted
+  if (user.isDeleted) {
+    user.isDeleted = false;
+    await user.save();
+  }
+
   return res
     .status(200)
     .json({ success: true, message: "Login Success", token });

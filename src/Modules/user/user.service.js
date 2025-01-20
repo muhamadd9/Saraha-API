@@ -56,3 +56,14 @@ export const changePassword = async (req, res, next) => {
     results: updatedUser,
   });
 };
+
+export const deactivateAcccount = async (req, res, next) => {
+  const updatedUser = await userModel
+    .findByIdAndUpdate(
+      req.user._id,
+      { isDeleted: true },
+      { new: true, runValidators: true }
+    )
+    .select("-password");
+  return res.status(200).json({ success: true, results: updatedUser });
+};

@@ -43,6 +43,10 @@ const userSchema = new Schema(
     changedAt: {
       type: Date,
     },
+    isDeleted: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true }
 );

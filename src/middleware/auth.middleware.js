@@ -18,6 +18,11 @@ const isAuthenticaded = asyncHandler(async (req, res, next) => {
   if (user.changedAt?.getTime() > decoded.iat * 1000)
     return next(new CustomError("Please login again", 401));
 
+  if (user.isDeleted)
+    return next(
+      new CustomError("Please login again to reactivate account", 401)
+    );
+
   req.user = user;
   return next();
 });
