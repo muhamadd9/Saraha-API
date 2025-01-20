@@ -17,11 +17,14 @@ export const createMessage = async (req, res, next) => {
 
 // get Single Message
 export const getSignleMessage = async (req, res, next) => {
-  const message = await messageModel.findById(req.params.id);
-  // current user is sender or reciver
+  const message = await messageModel.findById(req.params.id).populate([
+    { path: "sender", select: "userName email -_id" },
+    { path: "reciver", select: "userName email -_id" },
+  ]);
+  // current user is not sender or reciver
   if (
-    message.reciver.toString() != req.user._id.toString() &&
-    message.sender.toString() != req.user._id.toString()
+    message.reciver?.email != req.user.email &&
+    message.sender?.email != req.user.email
   )
     return next(new CustomError("Not authourized!", 401));
   return res.status(200).json({ success: true, message });
