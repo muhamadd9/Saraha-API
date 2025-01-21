@@ -40,6 +40,13 @@ const userSchema = new Schema(
       enum: Object.values(genders),
     },
     role: { type: String, enum: Object.values(roles), default: roles.user },
+    changedAt: {
+      type: Date,
+    },
+    isDeleted: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true }
 );

@@ -1,6 +1,9 @@
 import bcrypt from "bcrypt";
 
-export const generateHash = ({ plainText, rounds = process.env.ROUNDS }) => {
+export const generateHash = ({
+  plainText,
+  rounds = Number(process.env.ROUNDS),
+}) => {
   return bcrypt.hashSync(plainText, rounds);
 };
 
