@@ -20,3 +20,12 @@ export const getAllMessages = Joi.object({
     .valid(...Object.values(flags))
     .required(),
 }).required();
+
+export const updateMessage = Joi.object({
+  id: Joi.custom(isObjectId).required(),
+  content: Joi.string(),
+});
+
+export const deleteMessage = Joi.object({
+  id: Joi.custom(isObjectId).required(),
+});

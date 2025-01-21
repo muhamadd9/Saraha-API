@@ -21,6 +21,7 @@ export const getSignleMessage = async (req, res, next) => {
     { path: "sender", select: "userName email -_id" },
     { path: "reciver", select: "userName email -_id" },
   ]);
+  if (!message) return next(new CustomError("Message not found", 404));
   // current user is not sender or reciver
   if (
     message.reciver?.email != req.user.email &&
@@ -44,7 +45,34 @@ export const getAllMessages = async (req, res, next) => {
 };
 
 // update
-export const updateMessage = async (req, res, next) => {};
+export const updateMessage = async (req, res, next) => {
+  const message = await messageModel.findById(req.params.id);
+  if (!message) return next(new CustomError("Message not found", 404));
+  // current user is not sender
+  if (message.sender.toString() != req.user._id.toString())
+    return next(new CustomError("Not authourized!", 401));
+
+  const updatedMessage = await messageModel.findByIdAndUpdate(
+    req.params.id,
+    req.body,
+    { new: true }
+  );
+
+  return res.status(200).json({ success: true, message: updatedMessage });
+};
 
 // delete
-export const deleteMessage = async (req, res, next) => {};
+export const deleteMessage = async (req, res, next) => {
+  const message = await messageModel.findById(req.params.id);
+  if (!message) return next(new CustomError("Message not found", 404));
+
+  // current user is not sender or reciver
+  if (
+    message.reciver.toString() != req.user._id.toString() &&
+    message.sender.toString() != req.user._id.toString()
+  )
+    return next(new CustomError("Not authourized!", 401));
+
+  await messageModel.findByIdAndDelete(req.params.id);
+  return res.status(200).json({ success: true, message: "Message deleted" });
+};

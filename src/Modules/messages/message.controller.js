@@ -37,9 +37,21 @@ router.get(
 );
 
 // update
-router.patch("/", asyncHandler(messageService.updateMessage));
+router.patch(
+  "/:id",
+  isAuthenticaded,
+  isAuthorized(roles.user),
+  validation(messageSchema.updateMessage),
+  asyncHandler(messageService.updateMessage)
+);
 
 // delete
-router.patch("/", asyncHandler(messageService.deleteMessage));
+router.delete(
+  "/:id",
+  isAuthenticaded,
+  isAuthorized(roles.user),
+  validation(messageSchema.deleteMessage),
+  asyncHandler(messageService.deleteMessage)
+);
 
 export default router;
